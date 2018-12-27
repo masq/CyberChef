@@ -6,7 +6,7 @@
 
 import Operation from "../Operation";
 import Utils from "../Utils";
-import { bitOp, xor, BITWISE_OP_DELIMS } from "../lib/BitwiseOp";
+import { bitOp, xor, add, BITWISE_OP_DELIMS } from "../lib/BitwiseOp";
 
 /**
  * XOR operation
@@ -35,7 +35,7 @@ class XOR extends Operation {
             {
                 "name": "Scheme",
                 "type": "option",
-                "value": ["Standard", "Input differential", "Output differential", "Cascade"]
+                "value": ["Standard", "Input differential", "Output differential", "Cascade", "Rolling", "Rolling (cumulative)", "Rolling (cumulative self)"]
             },
             {
                 "name": "Null preserving",
@@ -53,6 +53,33 @@ class XOR extends Operation {
     run(input, args) {
         const key = Utils.convertToByteArray(args[0].string || "", args[0].option),
             [, scheme, nullPreserving] = args;
+
+		if (scheme.startsWith("Rolling") && key.length) {
+			const inp = input.chunks(key.length);
+			let running_index = 0;
+			let running_key = key;
+			//console.log(inp);
+			//console.log(key, key.map(x => add(x, 1)));
+			return inp.reduce((result, current, index) => {
+				//console.log("running total:", result);
+				//console.log("current value:", current);
+				//console.log("index:", index);
+				//const merp = bitOp(current, key.map(x => add(x, index)), xor, nullPreserving, scheme);
+				//console.log("merp:", merp);
+				running_index += index;
+				switch (scheme) {
+					case "Rolling":
+						return result.concat(bitOp(current, key.map(x => add(x, index)), xor, nullPreserving, scheme));
+					case "Rolling (cumulative)":  // index + previous index
+						return result.concat(bitOp(current, key.map(x => add(x, running_index)), xor, nullPreserving, scheme));
+					case "Rolling (cumulative self)": // key = key XOR previous chunk 
+						const xorred = bitOp(current, running_key, xor, nullPreserving, scheme);
+						running_key = bitOp(running_key, current, xor, nullPreserving, scheme);
+						return result.concat(xorred);
+				}
+			}, Utils.strToByteArray(""));
+                
+		}
 
         return bitOp(input, key, xor, nullPreserving, scheme);
     }
