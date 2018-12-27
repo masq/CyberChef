@@ -58,19 +58,12 @@ class XOR extends Operation {
 			const inp = input.chunks(key.length);
 			let running_index = 0;
 			let running_key = key;
-			//console.log(inp);
-			//console.log(key, key.map(x => add(x, 1)));
 			return inp.reduce((result, current, index) => {
-				//console.log("running total:", result);
-				//console.log("current value:", current);
-				//console.log("index:", index);
-				//const merp = bitOp(current, key.map(x => add(x, index)), xor, nullPreserving, scheme);
-				//console.log("merp:", merp);
 				running_index += index;
 				switch (scheme) {
-					case "Rolling":
+					case "Rolling":  // key = key + index
 						return result.concat(bitOp(current, key.map(x => add(x, index)), xor, nullPreserving, scheme));
-					case "Rolling (cumulative)":  // index + previous index
+					case "Rolling (cumulative)":  // key = key + index + previous indices
 						return result.concat(bitOp(current, key.map(x => add(x, running_index)), xor, nullPreserving, scheme));
 					case "Rolling (cumulative self)": // key = key XOR previous chunk 
 						const xorred = bitOp(current, running_key, xor, nullPreserving, scheme);
