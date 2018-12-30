@@ -47,4 +47,57 @@ TestRegister.addTests([
                 "args": ["Space"] }
         ]
     },
+    {
+        name: "XOR: empty",
+        input: "",
+        expectedOutput: "",
+        recipeConfig: [
+            { "op": "From Binary",
+                "args": ["Space"] },
+            { "op": "XOR",
+                "args": ["binary", "11111111", "Standard", false] },
+            { "op": "To Binary",
+                "args": ["Space"] }
+        ]
+    },
+    {
+        name: "XOR: 1111111, standard, no preserve nulls",
+        input: "01010101 10101010 11111111 00000000 11110000 00001111 00110011 11001100",
+        expectedOutput: "10101010 01010101 00000000 11111111 00001111 11110000 11001100 00110011",
+        recipeConfig: [
+            { "op": "From Binary",
+                "args": ["Space"] },
+            { "op": "XOR",
+                "args": ["binary", "11111111", "Standard", false] },
+            { "op": "To Binary",
+                "args": ["Space"] }
+        ]
+    },
+    {
+        name: "XOR: 1111111, standard, preserve nulls",
+        input: "01010101 10101010 11111111 00000000 11110000 00001111 00110011 11001100",
+        // Should the ones be kept as ones? Seems like it's not a null that we're preserving...
+        expectedOutput: "10101010 01010101 11111111 00000000 00001111 11110000 11001100 00110011",
+        recipeConfig: [
+            { "op": "From Binary",
+                "args": ["Space"] },
+            { "op": "XOR",
+                "args": ["binary", "11111111", "Standard", true] },
+            { "op": "To Binary",
+                "args": ["Space"] }
+        ]
+    },
+    //{
+    //    name: "XOR: 1111111, standard, preserve nulls",
+    //    input: "01010101 10101010 11111111 00000000 11110000 00001111 00110011 11001100",
+    //    expectedOutput: "10101010 01010101 11111111 00000000 00001111 11110000 11001100 00110011",
+    //    recipeConfig: [
+    //        { "op": "From Binary",
+    //            "args": ["Space"] },
+    //        { "op": "XOR",
+    //            "args": ["binary", "11111111", "Standard", false] },
+    //        { "op": "To Binary",
+    //            "args": ["Space"] }
+    //    ]
+    //},
 ]);

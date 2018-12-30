@@ -19,11 +19,12 @@
 export function bitOp (input, key, func, nullPreserving, scheme) {
     if (!key || !key.length) key = [0];
     const result = [];
-    let x = null,
+    let i,
+        x = null,
         k = null,
         o = null;
 
-    for (let i = 0; i < input.length; i++) {
+    for (i = 0; i < input.length; i++) {
         k = key[i % key.length];
         if (scheme === "Cascade") k = input[i + 1] || 0;
         o = input[i];
